@@ -27,7 +27,7 @@ async def async_get_code(hass, aiohttp_client):
     client = await async_setup_auth(hass, aiohttp_client, config)
     user = await hass.auth.async_create_user(name='Hello')
     refresh_token = await hass.auth.async_create_refresh_token(user, CLIENT_ID)
-    access_token = hass.auth.async_create_access_token(refresh_token)
+    access_token = refresh_token.async_create_access_token()
 
     # Now authenticate with the 2nd flow
     resp = await client.post('/auth/login_flow', json={

@@ -201,8 +201,6 @@ async def test_saving_loading(hass, hass_storage):
     await manager.async_activate_user(user)
     refresh_token = await manager.async_create_refresh_token(user, CLIENT_ID)
 
-    manager.async_create_access_token(refresh_token)
-
     await flush_store(manager._store._store)
 
     store2 = auth_store.AuthStore(hass)
@@ -219,7 +217,7 @@ async def test_cannot_retrieve_expired_access_token(hass):
     assert refresh_token.user.id is user.id
     assert refresh_token.client_id == CLIENT_ID
 
-    access_token = manager.async_create_access_token(refresh_token)
+    access_token = refresh_token.async_create_access_token()
     assert (
         await manager.async_validate_access_token(access_token)
         is refresh_token
@@ -228,7 +226,7 @@ async def test_cannot_retrieve_expired_access_token(hass):
     with patch('homeassistant.util.dt.utcnow',
                return_value=dt_util.utcnow() -
                auth_const.ACCESS_TOKEN_EXPIRATION - timedelta(seconds=1)):
-        access_token = manager.async_create_access_token(refresh_token)
+        access_token = refresh_token.async_create_access_token()
 
     assert (
         await manager.async_validate_access_token(access_token)

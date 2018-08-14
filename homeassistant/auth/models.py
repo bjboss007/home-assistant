@@ -3,7 +3,9 @@ from datetime import datetime, timedelta
 import uuid
 
 import attr
+import jwt
 
+from homeassistant.core import callback
 from homeassistant.util import dt as dt_util
 
 from .const import ACCESS_TOKEN_EXPIRATION
@@ -41,6 +43,15 @@ class RefreshToken:
                     default=attr.Factory(lambda: generate_secret(64)))
     jwt_key = attr.ib(type=str,
                       default=attr.Factory(lambda: generate_secret(64)))
+
+    @callback
+    def async_create_access_token(self):
+        """Generate an access token."""
+        return jwt.encode({
+            'iss': self.id,
+            'iat': dt_util.utcnow(),
+            'exp': dt_util.utcnow() + self.access_token_expiration,
+        }, self.jwt_key, algorithm='HS256').decode()
 
 
 @attr.s(slots=True)

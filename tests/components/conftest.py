@@ -45,4 +45,4 @@ def hass_access_token(hass):
     user = MockUser().add_to_hass(hass)
     refresh_token = hass.loop.run_until_complete(
         hass.auth.async_create_refresh_token(user, CLIENT_ID))
-    yield hass.auth.async_create_access_token(refresh_token)
+    yield refresh_token.async_create_access_token()

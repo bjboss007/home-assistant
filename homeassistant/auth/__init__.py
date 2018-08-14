@@ -190,15 +190,6 @@ class AuthManager:
         """Get refresh token by token."""
         return await self._store.async_get_refresh_token_by_token(token)
 
-    @callback
-    def async_create_access_token(self, refresh_token):
-        """Create a new access token."""
-        return jwt.encode({
-            'iss': refresh_token.id,
-            'iat': dt_util.utcnow(),
-            'exp': dt_util.utcnow() + refresh_token.access_token_expiration,
-        }, refresh_token.jwt_key, algorithm='HS256').decode()
-
     async def async_validate_access_token(self, token):
         """Return if an access token is valid."""
         try:
