@@ -8,7 +8,6 @@ import jwt
 
 from homeassistant import data_entry_flow
 from homeassistant.core import callback, HomeAssistant
-from homeassistant.util import dt as dt_util
 
 from . import auth_store
 from .providers import auth_provider_from_config
@@ -211,7 +210,6 @@ class AuthManager:
                 algorithms=['HS256']
             )
         except jwt.InvalidTokenError:
-            _LOGGER.exception("KUT 2")
             return None
 
         if not refresh_token.user.is_active:
