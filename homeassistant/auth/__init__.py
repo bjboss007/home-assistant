@@ -193,20 +193,25 @@ class AuthManager:
         """Return if an access token is valid."""
         try:
             unverif_claims = jwt.decode(token, verify=False)
-        except jwt.InvalidTokenError:
+        except jwt.InvalidTokenError as err:
+            _LOGGER.warning('Unable to decode access token: {}'.format(err))
             return None
 
         refresh_token = await self.async_get_refresh_token(
             unverif_claims.get('iss'))
 
         if refresh_token is None:
-            return None
+            jwt_key = ''
+            issuer = ''
+        else:
+            jwt_key = refresh_token.jwt_key
+            issuer = refresh_token.id
 
         try:
             jwt.decode(
                 token,
-                refresh_token.jwt_key,
-                issuer=refresh_token.id,
+                jwt_key,
+                issuer=issuer,
                 algorithms=['HS256']
             )
         except jwt.InvalidTokenError:
